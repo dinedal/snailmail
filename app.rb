@@ -1,10 +1,10 @@
 require './lib/snailmail'
 
 
-class SnailMailApp < Sinatra::Base
+class Snailmail::App < Sinatra::Base
   get '/' do
     "hi"
   end
 end
 
-SnailMailApp.run!
+Snailmail::App.run!
