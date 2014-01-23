@@ -11,6 +11,13 @@ class Snailmail::Web < Sinatra::Base
 
 end
 
+class Snailmail::Telephony < Sinatra::Base
+
+  post '/incoming' do
+    "run run"
+  end
+end
+
 class Snailmail::AdminApi < Sinatra::Base
 
   get '/' do
