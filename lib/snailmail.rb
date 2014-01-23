@@ -1,3 +1,6 @@
+require 'dotenv'
+Dotenv.load
+
 module Snailmail
   LOB_APIKEY        = ENV['LOB_APIKEY']
   TWILLIO_SID       = ENV['TWILLIO_SID']
