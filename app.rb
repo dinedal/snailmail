@@ -12,13 +12,6 @@ end
 class Snailmail::Telephony < Sinatra::Base
   @@phoner = Snailmail::TwillioIntegration.new
 
-  configure do
-    enable :logging
-    file = File.new("#{settings.root}/log/#{settings.environment}.log", 'a+')
-    file.sync = true
-    use Rack::CommonLogger, file
-  end
-
   post '/incoming' do
     content_type 'text/xml'
     @@phoner.twiml do |r|
