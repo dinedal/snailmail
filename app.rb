@@ -71,6 +71,9 @@ class Snailmail::Telephony < Sinatra::Base
       end
     end
   end
+
+  # GOLD
+  # curl http://api.twilio.com/2010-04-01/Accounts/ACb84633f66d5af69d5d09b9b6535f1ed7/Recordings/RE6ff45ca6335a9b32a060fc997987f93e 2> /dev/null | ffmpeg -i pipe:0 -vn -sn -acodec flac -f flac pipe:1 | curl -v -X POST -H 'Content-Type: audio/x-flac; rate=8000' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7' --data-binary @- https://www.google.com/speech-api/v1/recognize\?xjerr\=1\&client\=chromium\&lang\=en-US\&results\=10
 end
 
 class Snailmail::AdminApi < Sinatra::Base
