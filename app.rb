@@ -15,7 +15,7 @@ class Snailmail::Telephony < Sinatra::Base
   post '/incoming' do
     content_type 'text/xml'
     @@phoner.twiml do |r|
-      r.Gather :action => '/user_query' do
+      r.Gather :action => 'user_query' do
         r.Say 'Please enter your user short code
                followed by the pound sign', :voice => 'alice'
       end
