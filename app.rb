@@ -1,6 +1,5 @@
 require './lib/snailmail'
 
-
 class Snailmail::Web < Sinatra::Base
   @@mailer = Snailmail::LobIntegration.new
 
@@ -13,11 +12,26 @@ end
 class Snailmail::Telephony < Sinatra::Base
   @@phoner = Snailmail::TwillioIntegration.new
 
+  configure do
+    enable :logging
+    file = File.new("#{settings.root}/log/#{settings.environment}.log", 'a+')
+    file.sync = true
+    use Rack::CommonLogger, file
+  end
+
   post '/incoming' do
     content_type 'text/xml'
     @@phoner.twiml do |r|
-      r.Say 'hello there', :voice => 'alice'
+      r.Gather :action => '/user_query' do
+        r.Say 'Please enter your user short code
+               followed by the pound sign', :voice => 'alice'
+      end
+      r.Say 'Goodbye', :voice => 'alice'
     end
+  end
+
+  post '/user_query' do
+    $stderr.puts request.body.read
   end
 end
 
