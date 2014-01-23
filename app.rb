@@ -28,14 +28,20 @@ class Snailmail::Telephony < Sinatra::Base
     user = User.with(:short_code, params['Digits'])
     if user && !user.recipients.empty?
       choices = user.recipients.map{|r| [r.name, r.short_code]}.join(', ')
-      r.Gather :action => 'record_for_recipient', :method => 'get' do
-        r.Say 'Please pick a recipient followed by the pound sign.
-               Your choices are, ' + choices, :voice => 'alice'
+      @@phoner.twiml do |r|
+        r.Gather :action => 'record_for_recipient', :method => 'get' do
+          r.Say 'Please pick a recipient followed by the pound sign.
+                 Your choices are, ' + choices, :voice => 'alice'
+        end
       end
     elsif user
-      r.Say 'No recipients found. Goodbye', :voice => 'alice'
+      @@phoner.twiml do |r|
+        r.Say 'No recipients found. Goodbye', :voice => 'alice'
+      end
     else
-      r.Say 'No user found. Goodbye', :voice => 'alice'
+      @@phoner.twiml do |r|
+        r.Say 'No user found. Goodbye', :voice => 'alice'
+      end
     end
   end
 end
