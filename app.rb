@@ -36,7 +36,7 @@ class Snailmail::Telephony < Sinatra::Base
       end
     elsif user
       @@phoner.twiml do |r|
-        r.Say 'No recipients found. Goodbye', :voice => 'alice'
+        r.Say "No recipients found for #{user.name}. Goodbye", :voice => 'alice'
       end
     else
       @@phoner.twiml do |r|

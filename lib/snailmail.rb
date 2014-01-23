@@ -15,6 +15,6 @@ require 'twilio-ruby'
 require 'redic'
 require 'ohm'
 
-Ohm.redis = Redic.new(Snailmail::REDIS_URL)
+Ohm.connect(url: Snailmail::REDIS_URL)
 
 Dir["./lib/snailmail/**"].map(&method(:require))

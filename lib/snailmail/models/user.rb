@@ -11,8 +11,4 @@ class User < Ohm::Model
   attribute :country
 
   collection :recipients, :Recipient
-
-  def name_and_address
-    self.address.merge(name: self.name)
-  end
 end
