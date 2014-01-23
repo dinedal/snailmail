@@ -63,14 +63,13 @@ class Snailmail::Telephony < Sinatra::Base
       @@current_calls[params['CallSid']] = recipient.id
       @@phoner.twiml do |r|
         r.Say "Record your post card for #{recipient.name} after the tone", :voice => 'alice'
-        r.Record :timeout => 14
+        r.Record :timeout => 14, :method => 'get'
       end
     else
       @@phoner.twiml do |r|
         r.Say "There was a problem, please try your call again", :voice => 'alice'
       end
     end
-
   end
 end
 
