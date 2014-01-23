@@ -23,7 +23,7 @@ class Snailmail::Telephony < Sinatra::Base
     end
   end
 
-  post '/user_query' do
+  get '/user_query' do
     content_type 'text/xml'
     user = User.with(:short_code, params['Digits'])
     if user
@@ -33,7 +33,7 @@ class Snailmail::Telephony < Sinatra::Base
                Your choices are, ' + choices, :voice => 'alice'
       end
     else
-      r.Say 'No user find. Goodbye', :voice => 'alice'
+      r.Say 'No user found. Goodbye', :voice => 'alice'
     end
   end
 end
