@@ -1,2 +1,5 @@
 require './app'
-run Snailmail::App
+run Rack::URLMap.new({
+  "/" => Snailmail::Web,
+  "/protected" => Snailmail::AdminApi
+  })
