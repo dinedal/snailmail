@@ -8,5 +8,4 @@ gem 'pry', '~> 0.9.12.4'
 gem 'pry-doc', '~> 0.5.1', :groups => [:development]
 gem 'twilio-ruby', '~> 3.11.4'
 gem 'lob', '~> 1.2'
-gem 'dotenv', '~> 0.9.0', :groups => [:development, :test]
 gem 'ohm', '~> 1.3.2'
