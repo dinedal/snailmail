@@ -11,6 +11,7 @@ end
 
 class Snailmail::Telephony < Sinatra::Base
   @@phoner = Snailmail::TwillioIntegration.new
+  @@current_calls = {}
 
   post '/incoming' do
     content_type 'text/xml'
@@ -43,6 +44,33 @@ class Snailmail::Telephony < Sinatra::Base
         r.Say 'No user found. Goodbye', :voice => 'alice'
       end
     end
+  end
+
+  get '/record_for_recipient' do
+    content_type 'text/xml'
+
+    if params['RecordingUrl'] && @@current_calls[params['CallSid']]
+      # We have a recording coming in, and a matching on-going call
+      recipient = Recipient[@@current_calls.delete(params['CallSid'])]
+      $stderr.puts "---------------------------------------"
+      $stderr.puts "#{params['RecordingUrl']}"
+      $stderr.puts "---------------------------------------"
+      @@phoner.twiml do |r|
+        r.Hangup
+      end
+    elsif @@current_calls[params['CallSid']] == nil
+      recipient = Recipient.with(:short_code, params['Digits'])
+      @@current_calls[params['CallSid']] = recipient.id
+      @@phoner.twiml do |r|
+        r.Say "Record your post card for #{recipient.name} after the tone", :voice => 'alice'
+        r.Record :timeout => 14
+      end
+    else
+      @@phoner.twiml do |r|
+        r.Say "There was a problem, please try your call again", :voice => 'alice'
+      end
+    end
+
   end
 end
 
