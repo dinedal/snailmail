@@ -3,7 +3,6 @@ require './lib/snailmail'
 
 class Snailmail::Web < Sinatra::Base
   @@mailer = Snailmail::LobIntegration.new
-  @@phoner = Snailmail::TwillioIntegration.new
 
   get '/' do
     "hi"
@@ -12,9 +11,13 @@ class Snailmail::Web < Sinatra::Base
 end
 
 class Snailmail::Telephony < Sinatra::Base
+  @@phoner = Snailmail::TwillioIntegration.new
 
   post '/incoming' do
-    "run run"
+    content_type 'text/xml'
+    @@phoner.twiml do |r|
+      r.Say 'hello there', :voice => 'alice'
+    end
   end
 end
 
