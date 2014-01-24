@@ -1,10 +1,15 @@
 require './lib/snailmail'
 
 class Snailmail::Web < Sinatra::Base
+  POSTCARD_IMAGES = `ls ./assets/postcard_images/`.split("\n")
   set :public_folder, 'assets'
 
   get '/' do
     "hi"
+  end
+
+  get '/random_postcard' do
+    send_file File.join(settings.public_folder, 'postcard_images/', POSTCARD_IMAGES.shuffle.first)
   end
 
 end
