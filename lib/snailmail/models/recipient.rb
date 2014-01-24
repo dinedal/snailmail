@@ -11,4 +11,10 @@ class Recipient < Ohm::Model
   attribute :country
 
   reference :user, :User
+
+  def assign_address(address_hash)
+    address_hash.each do |k,v|
+      self.__send__(:"#{k}=", v)
+    end
+  end
 end
