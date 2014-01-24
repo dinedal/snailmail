@@ -1,7 +1,7 @@
 require './lib/snailmail'
 
 class Snailmail::Web < Sinatra::Base
-  @@mailer = Snailmail::LobIntegration.new
+  set :public_folder, 'assets'
 
   get '/' do
     "hi"
@@ -11,6 +11,7 @@ end
 
 class Snailmail::Telephony < Sinatra::Base
   @@phoner = Snailmail::TwillioIntegration.new
+  @@mailer = Snailmail::LobIntegration.new
   @@current_calls = {}
 
   post '/incoming' do
