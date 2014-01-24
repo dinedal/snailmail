@@ -18,7 +18,6 @@ end
 class Snailmail::Telephony < Sinatra::Base
   @@phoner = Snailmail::TwillioIntegration.new
   @@mailer = Snailmail::LobIntegration.new
-  @@current_calls = {}
 
   post '/incoming' do
     content_type 'text/xml'
@@ -56,9 +55,13 @@ class Snailmail::Telephony < Sinatra::Base
   get '/record_for_recipient' do
     content_type 'text/xml'
 
-    if params['RecordingUrl'] && @@current_calls[params['CallSid']]
+    redis = Ohm.redis
+
+    if params['RecordingUrl'] &&
+        (r_id = redis.hget("current_calls", current_calls[params['CallSid']]))
       # We have a recording coming in, and a matching on-going call
-      recipient = Recipient[@@current_calls.delete(params['CallSid'])]
+      recipient = Recipient[r_id.to_i]
+      redis.hdel("current_calls", current_calls[params['CallSid']])
       user = recipient.user
       $stderr.puts "---------------------------------------"
       $stderr.puts "#{params['RecordingUrl']}"
@@ -82,7 +85,8 @@ class Snailmail::Telephony < Sinatra::Base
       end
     elsif @@current_calls[params['CallSid']] == nil
       recipient = Recipient.with(:short_code, params['Digits'])
-      @@current_calls[params['CallSid']] = recipient.id
+      redis.hset("current_calls", params['CallSid'], recipient.id)
+
       @@phoner.twiml do |r|
         r.Say "Record your post card for #{recipient.name} after the tone", :voice => 'alice'
         r.Record :timeout => 14, :method => 'get'
