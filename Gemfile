@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 ruby '2.1.0'
 
 gem 'sinatra', '~> 1.4.4'
-gem 'thin', '~> 1.6.1'
+gem 'unicorn', '~> 4.8.0'
 gem 'pry', '~> 0.9.12.4'
 gem 'pry-doc', '~> 0.5.1', :groups => [:development]
 gem 'twilio-ruby', '~> 3.11.4'
