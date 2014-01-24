@@ -5,11 +5,11 @@ class Snailmail::Web < Sinatra::Base
   set :public_folder, 'assets'
 
   get '/' do
-    "hi"
+    ""
   end
 
   get '/random_postcard' do
-    expires -1
+    last_modified(Time.now - 10)
     send_file File.join(settings.public_folder, 'postcard_images/', POSTCARD_IMAGES.shuffle.first)
   end
 
