@@ -58,10 +58,10 @@ class Snailmail::Telephony < Sinatra::Base
     redis = Ohm.redis
 
     if params['RecordingUrl'] &&
-        (r_id = redis.hget("current_calls", current_calls[params['CallSid']]))
+        (r_id = redis.hget("current_calls", params['CallSid']))
       # We have a recording coming in, and a matching on-going call
       recipient = Recipient[r_id.to_i]
-      redis.hdel("current_calls", current_calls[params['CallSid']])
+      redis.hdel("current_calls", params['CallSid'])
       user = recipient.user
       $stderr.puts "---------------------------------------"
       $stderr.puts "#{params['RecordingUrl']}"
@@ -83,7 +83,7 @@ class Snailmail::Telephony < Sinatra::Base
       @@phoner.twiml do |r|
         r.Hangup
       end
-    elsif @@current_calls[params['CallSid']] == nil
+    elsif redis.hget("current_calls", params['CallSid']).nil?
       recipient = Recipient.with(:short_code, params['Digits'])
       redis.hset("current_calls", params['CallSid'], recipient.id)
 
@@ -92,6 +92,7 @@ class Snailmail::Telephony < Sinatra::Base
         r.Record :timeout => 14, :method => 'get'
       end
     else
+      redis.hdel("current_calls", params['CallSid'])
       @@phoner.twiml do |r|
         r.Say "There was a problem, please try your call again", :voice => 'alice'
       end
