@@ -9,6 +9,7 @@ class Snailmail::Web < Sinatra::Base
   end
 
   get '/random_postcard' do
+    response.headers['Cache-Control'] = 'no-cache'
     send_file File.join(settings.public_folder, 'postcard_images/', POSTCARD_IMAGES.shuffle.first)
   end
 
