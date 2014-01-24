@@ -7,6 +7,7 @@ class Snailmail::LobIntegration
     "address_state"   => :state,
     "address_zip"     => :zip,
     "address_country" => :country,
+    "name"            => :name,
   }
 
   ADDRESS_KEYS = ADDRESS_KEYMAP.values
@@ -23,10 +24,15 @@ class Snailmail::LobIntegration
     verified_address.merge!(name: name)
   end
 
-  def mail_postcard(to_address, from_address, message)
+  def mail_postcard(to_address, from_address, front, message)
+
+    to = verify(to_address)
+    from = verify(from_address)
+
     @lob.postcards.create(
-      to: to_address,
-      from: from_address,
+      to: to,
+      from: from,
+      front: front,
       message: message,
     )
   end

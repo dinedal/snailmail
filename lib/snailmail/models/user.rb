@@ -17,4 +17,8 @@ class User < Ohm::Model
       self.__send__(:"#{k}=", v)
     end
   end
+
+  def address_to_hash
+    self.attributes.select{|k,_| Snailmail::LobIntegration::ADDRESS_KEYS.include?(k) }
+  end
 end

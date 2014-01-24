@@ -59,9 +59,24 @@ class Snailmail::Telephony < Sinatra::Base
     if params['RecordingUrl'] && @@current_calls[params['CallSid']]
       # We have a recording coming in, and a matching on-going call
       recipient = Recipient[@@current_calls.delete(params['CallSid'])]
+      user = recipient.user
       $stderr.puts "---------------------------------------"
       $stderr.puts "#{params['RecordingUrl']}"
       $stderr.puts "---------------------------------------"
+
+      message = Snailmail::Transcription.wav_to_text(params['RecordingUrl'])
+
+      $stderr.puts "---------------------------------------"
+      $stderr.puts message
+      $stderr.puts "---------------------------------------"
+
+      @@mailer.mail_postcard(
+        recipient.address_to_hash,
+        user.address_to_hash,
+        "http://#{Snailmail::SITE_HOSTNAME}/random_postcard",
+        message
+      )
+
       @@phoner.twiml do |r|
         r.Hangup
       end
@@ -79,17 +94,6 @@ class Snailmail::Telephony < Sinatra::Base
     end
   end
 
-  # GOLD
-  # curl http://api.twilio.com/2010-04-01/Accounts/ACb84633f66d5af69d5d09b9b6535f1ed7/Recordings/RE6ff45ca6335a9b32a060fc997987f93e 2> /dev/null | ffmpeg -i pipe:0 -vn -sn -acodec flac -f flac pipe:1 | curl -v -X POST -H 'Content-Type: audio/x-flac; rate=8000' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7' --data-binary @- https://www.google.com/speech-api/v1/recognize\?xjerr\=1\&client\=chromium\&lang\=en-US\&results\=10
-  # Ruby
-  # %x{curl http://api.twilio.com/2010-04-01/Accounts/ACb84633f66d5af69d5d09b9b6535f1ed7/Recordings/RE6ff45ca6335a9b32a060fc997987f93e 2> /dev/null | ffmpeg -i pipe:0 -vn -sn -acodec flac -f flac pipe:1 | curl -v -X POST -H 'Content-Type: audio/x-flac; rate=8000' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_6_8) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7' --data-binary @- "https://www.google.com/speech-api/v1/recognize?xjerr=1&client=chromium&lang=en-US&results=10"}
-  #
-  # After
-  # {"status"=>0,
-  # "id"=>"",
-  # "hypotheses"=>
-  #  [{"utterance"=>"hello this is Paul trying out the recording service",
-  #    "confidence"=>0.94003147}]}
 end
 
 class Snailmail::AdminApi < Sinatra::Base

@@ -7,6 +7,7 @@ module Snailmail
   TWILLIO_AUTHTOKEN = ENV['TWILLIO_AUTHTOKEN']
   ADMIN_PASSWORD    = ENV['ADMIN_PASSWORD']
   REDIS_URL         = ENV['REDISTOGO_URL']
+  SITE_HOSTNAME     = ENV['SITE_HOSTNAME']
 end
 
 require 'sinatra/base'
