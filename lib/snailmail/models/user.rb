@@ -9,6 +9,7 @@ class User < Ohm::Model
   attribute :state
   attribute :zip
   attribute :country
+  counter :uses_remaining
 
   collection :recipients, :Recipient
 

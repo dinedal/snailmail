@@ -33,13 +33,17 @@ class Snailmail::Telephony < Sinatra::Base
   get '/user_query' do
     content_type 'text/xml'
     user = User.with(:short_code, params['Digits'])
-    if user && !user.recipients.empty?
+    if user && !user.recipients.empty? && (user.uses_remaining > 0)
       choices = user.recipients.map{|r| [r.name, r.short_code]}.join(', ')
       @@phoner.twiml do |r|
         r.Gather :action => 'record_for_recipient', :method => 'get' do
           r.Say 'Please pick a recipient followed by the pound sign.
                  Your choices are, ' + choices, :voice => 'alice'
         end
+      end
+    elsif user && user.uses_remaining <= 0
+      @@phoner.twiml do |r|
+        r.Say "No uses remain for #{user.name}. Goodbye", :voice => 'alice'
       end
     elsif user
       @@phoner.twiml do |r|
@@ -79,6 +83,8 @@ class Snailmail::Telephony < Sinatra::Base
         "http://#{Snailmail::SITE_HOSTNAME}/random_postcard",
         message
       )
+
+      user.decr(:uses_remaining)
 
       @@phoner.twiml do |r|
         r.Hangup
