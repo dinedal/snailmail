@@ -1,17 +1,15 @@
 require './spec/helper.rb'
-require 'pry'
-class Snailmail::TelephonyTest < MiniTest::Spec
 
-  include Rack::Test::Methods
+def app
+  Snailmail::Telephony
+end
 
-  before do
-  end
+include Rack::Test::Methods
 
-  def app
-    Snailmail::Telephony
-  end
 
-  def test_incoming
+describe 'Twillio UI Flow' do
+
+  it 'asks new callers for thier shortcode' do
     post '/incoming'
     assert last_response.ok?
 
@@ -27,8 +25,5 @@ class Snailmail::TelephonyTest < MiniTest::Spec
     assert_equal "text/xml;charset=utf-8", last_response.content_type
   end
 
-  def test_user_query
-    get '/user_query'
-    assert_equal "text/xml;charset=utf-8", last_response.content_type
-  end
+
 end
