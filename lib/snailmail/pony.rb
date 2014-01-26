@@ -5,7 +5,7 @@ if Snailmail::SENDGRID_USERNAME &&
 
   Pony.options = {
     :to   => Snailmail::ADMIN_EMAIL,
-    :from => "snailmail@noreply.com",
+    :from => Snailmail::SENDGRID_USERNAME,
     :via  => :smtp,
     :via_options => {
       :address => 'smtp.sendgrid.net',
