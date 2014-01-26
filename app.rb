@@ -64,7 +64,7 @@ class Snailmail::Telephony < Sinatra::Base
 
       message = Snailmail::Transcription.wav_to_text(params['RecordingUrl'])
 
-      Snailmail::LobIntegration.mail_postcard(
+      postcard_result = Snailmail::LobIntegration.mail_postcard(
         recipient.address_to_hash,
         user.address_to_hash,
         "http://#{Snailmail::SITE_HOSTNAME}/random_postcard",
@@ -73,9 +73,15 @@ class Snailmail::Telephony < Sinatra::Base
 
       user.decr(:uses_remaining)
 
-      # if Snailmail::EMAIL_ENABLED
-      #   Pony.
-      # end
+      if Snailmail::EMAIL_ENABLED
+        Pony.mail(
+          :subject => "Snailmail used by User #{user.name}",
+          :body    => %Q{
+User ID / Name: #{user.id} / #{user.name}
+Recipient ID: #{recipient.id} / #{recipient.name}
+Generated postcard #{postcard_result["url"]}
+})
+      end
 
       Twilio::TwiML::Response.new do |r|
         r.Hangup
