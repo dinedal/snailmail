@@ -15,6 +15,7 @@ require 'lob'
 require 'twilio-ruby'
 require 'redic'
 require 'ohm'
+require 'pony'
 
 Ohm.connect(url: Snailmail::REDIS_URL)
 
