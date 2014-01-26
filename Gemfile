@@ -17,3 +17,4 @@ gem 'rack-test', '~> 0.6.2'
 gem 'guard', '~> 2.3.0', :groups => [:development]
 gem 'guard-minitest', '~> 2.2.0', :groups => [:development]
 gem 'mock_redis', '~> 0.11.0', :groups => [:development, :test]
+gem 'mocha', '~> 1.0.0', :groups => [:development, :test]

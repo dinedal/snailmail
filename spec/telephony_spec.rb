@@ -1,4 +1,5 @@
 require './spec/helper.rb'
+require 'pry'
 
 def app
   Snailmail::Telephony
@@ -98,6 +99,42 @@ describe 'Twillio UI Flow' do
       assert_equal response_body.text, last_response.body
     end
 
+    it 'properly transcribes a recording, and generates a postcard' do
+      call_sid = SecureRandom.uuid
+      recording_url = "http://recording.gov/"
+      transcription = "Testing the route"
+      Ohm.redis.hset("current_calls", call_sid, recipient.id)
+
+      current_uses_remaining = recipient.user.uses_remaining
+
+      Snailmail::Transcription.
+        expects(:wav_to_text).
+        with(recording_url).
+        returns(transcription)
+
+      mock_lob_integration = Snailmail::LobIntegration.new
+      mock_lob_integration.expects(:mail_postcard).
+          with(
+          recipient.address_to_hash,
+          recipient.user.address_to_hash,
+          "http://#{Snailmail::SITE_HOSTNAME}/random_postcard",
+          transcription).
+          returns(true)
+
+
+      Snailmail::Telephony.class_variable_set(:@@mailer, mock_lob_integration)
+
+
+      get '/record_for_recipient', {
+        :CallSid => call_sid,
+        :RecordingUrl => recording_url,
+      }
+
+      assert Ohm.redis.hget("current_calls", call_sid).nil?, true
+      assert (current_uses_remaining - 1), recipient.user.uses_remaining
+      assert last_response.ok?
+      assert_equal "text/xml;charset=utf-8", last_response.content_type
+    end
   end
 
 end
