@@ -1,8 +1,11 @@
 class User < Ohm::Model
+  ##
+  # Attributes
+  #
+
   attribute :name
   attribute :short_code
   unique :short_code
-
   attribute :address_line1
   attribute :address_line2
   attribute :city
@@ -11,7 +14,26 @@ class User < Ohm::Model
   attribute :country
   counter :uses_remaining
 
+  ##
+  # Relations
+  #
+
   collection :recipients, :Recipient
+
+  ##
+  # Validations
+  #
+
+  def validate
+    assert_present :name
+    assert_present :short_code
+    assert_present :address_line1
+    assert_present :city
+    assert_present :state
+    assert_present :zip
+
+    assert_format  :short_code, /[0-9]+/
+  end
 
   def assign_address(address_hash)
     address_hash.each do |k,v|
