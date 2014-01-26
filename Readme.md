@@ -19,7 +19,7 @@ Requires:
 - Ruby 2.1
 - Redis
 - ffmpeg on `$PATH`
-- Lob API keys
+- Lob API key
 
 Heroku setup:
 
@@ -83,7 +83,7 @@ Last step, in your Twillo App settings, add an incoming call endpoint to POST to
 
 Then call your Twillio number, enter in the short-code of the user you generated above, the recipient short code, and await your postcard!
 
-# Who?
+## Who?
 
 [Paul Bergeron](http://pauldbergeron.com/) wrote this.
 
