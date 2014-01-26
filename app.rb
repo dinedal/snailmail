@@ -4,10 +4,6 @@ class Snailmail::Web < Sinatra::Base
   POSTCARD_IMAGES = `ls ./assets/postcard_images/`.split("\n")
   set :public_folder, 'assets'
 
-  get '/' do
-    ""
-  end
-
   get '/random_postcard' do
     last_modified(Time.now - 10)
     send_file File.join(settings.public_folder, 'postcard_images/', POSTCARD_IMAGES.shuffle.first)
@@ -94,23 +90,6 @@ class Snailmail::Telephony < Sinatra::Base
         r.Say "There was a problem, please try your call again", :voice => 'alice'
       end.text
     end
-  end
-
-end
-
-class Snailmail::AdminApi < Sinatra::Base
-
-  get '/' do
-    "secert"
-  end
-
-  def self.new(*)
-    app = Rack::Auth::Digest::MD5.new(super) do |username|
-      {'admin' => Snailmail::ADMIN_PASSWORD}[username]
-    end
-    app.realm = 'Protected Area'
-    app.opaque = 'secretkey'
-    app
   end
 
 end
