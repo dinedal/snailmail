@@ -73,6 +73,10 @@ class Snailmail::Telephony < Sinatra::Base
 
       user.decr(:uses_remaining)
 
+      # if Snailmail::EMAIL_ENABLED
+      #   Pony.
+      # end
+
       Twilio::TwiML::Response.new do |r|
         r.Hangup
       end.text
