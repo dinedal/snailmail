@@ -16,18 +16,17 @@ class Snailmail::Web < Sinatra::Base
 end
 
 class Snailmail::Telephony < Sinatra::Base
-  @@phoner = Snailmail::TwillioIntegration.new
   @@mailer = Snailmail::LobIntegration.new
 
   post '/incoming' do
     content_type 'text/xml'
-    @@phoner.twiml do |r|
+    Twilio::TwiML::Response.new do |r|
       r.Gather :action => 'user_query', :method => 'get' do
         r.Say 'Please enter your user short code
                followed by the pound sign', :voice => 'alice'
       end
       r.Say 'Goodbye', :voice => 'alice'
-    end
+    end.text
   end
 
   get '/user_query' do
@@ -35,24 +34,24 @@ class Snailmail::Telephony < Sinatra::Base
     user = User.with(:short_code, params['Digits'])
     if user && !user.recipients.empty? && (user.uses_remaining > 0)
       choices = user.recipients.map{|r| [r.name, r.short_code]}.join(', ')
-      @@phoner.twiml do |r|
+      Twilio::TwiML::Response.new do |r|
         r.Gather :action => 'record_for_recipient', :method => 'get' do
           r.Say 'Please pick a recipient followed by the pound sign.
                  Your choices are, ' + choices, :voice => 'alice'
         end
-      end
+      end.text
     elsif user && user.uses_remaining <= 0
-      @@phoner.twiml do |r|
+      Twilio::TwiML::Response.new do |r|
         r.Say "No uses remain for #{user.name}. Goodbye", :voice => 'alice'
-      end
+      end.text
     elsif user
-      @@phoner.twiml do |r|
+      Twilio::TwiML::Response.new do |r|
         r.Say "No recipients found for #{user.name}. Goodbye", :voice => 'alice'
-      end
+      end.text
     else
-      @@phoner.twiml do |r|
+      Twilio::TwiML::Response.new do |r|
         r.Say 'No user found. Goodbye', :voice => 'alice'
-      end
+      end.text
     end
   end
 
@@ -67,15 +66,8 @@ class Snailmail::Telephony < Sinatra::Base
       recipient = Recipient[r_id.to_i]
       redis.hdel("current_calls", params['CallSid'])
       user = recipient.user
-      $stderr.puts "---------------------------------------"
-      $stderr.puts "#{params['RecordingUrl']}"
-      $stderr.puts "---------------------------------------"
 
       message = Snailmail::Transcription.wav_to_text(params['RecordingUrl'])
-
-      $stderr.puts "---------------------------------------"
-      $stderr.puts message
-      $stderr.puts "---------------------------------------"
 
       @@mailer.mail_postcard(
         recipient.address_to_hash,
@@ -86,22 +78,22 @@ class Snailmail::Telephony < Sinatra::Base
 
       user.decr(:uses_remaining)
 
-      @@phoner.twiml do |r|
+      Twilio::TwiML::Response.new do |r|
         r.Hangup
-      end
+      end.text
     elsif redis.hget("current_calls", params['CallSid']).nil?
       recipient = Recipient.with(:short_code, params['Digits'])
       redis.hset("current_calls", params['CallSid'], recipient.id)
 
-      @@phoner.twiml do |r|
+      Twilio::TwiML::Response.new do |r|
         r.Say "Record your post card for #{recipient.name} after the tone", :voice => 'alice'
         r.Record :timeout => 14, :method => 'get'
-      end
+      end.text
     else
       redis.hdel("current_calls", params['CallSid'])
-      @@phoner.twiml do |r|
+      Twilio::TwiML::Response.new do |r|
         r.Say "There was a problem, please try your call again", :voice => 'alice'
-      end
+      end.text
     end
   end
 
