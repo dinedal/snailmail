@@ -16,7 +16,6 @@ class Snailmail::Web < Sinatra::Base
 end
 
 class Snailmail::Telephony < Sinatra::Base
-  @@mailer = Snailmail::LobIntegration.new
 
   post '/incoming' do
     content_type 'text/xml'
@@ -69,7 +68,7 @@ class Snailmail::Telephony < Sinatra::Base
 
       message = Snailmail::Transcription.wav_to_text(params['RecordingUrl'])
 
-      @@mailer.mail_postcard(
+      Snailmail::LobIntegration.mail_postcard(
         recipient.address_to_hash,
         user.address_to_hash,
         "http://#{Snailmail::SITE_HOSTNAME}/random_postcard",

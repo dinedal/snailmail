@@ -1,4 +1,7 @@
+require 'singleton'
+
 class Snailmail::LobIntegration
+  include Singleton
 
   ADDRESS_KEYMAP = {
     "address_line1"   => :address_line1,
@@ -24,6 +27,10 @@ class Snailmail::LobIntegration
     verified_address.merge!(name: name)
   end
 
+  def self.verify(address)
+    self.instance.verif(address)
+  end
+
   def mail_postcard(to_address, from_address, front, message)
 
     to = verify(to_address)
@@ -37,7 +44,10 @@ class Snailmail::LobIntegration
     )
   end
 
-  private
+  def self.mail_postcard(to_address, from_address, front, message)
+    self.instance.mail_postcard(to_address, from_address, front, message)
+  end
+
   def cleanup_verified_address(address)
     clean_address = {}
 

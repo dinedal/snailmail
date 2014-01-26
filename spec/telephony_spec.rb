@@ -112,18 +112,13 @@ describe 'Twillio UI Flow' do
         with(recording_url).
         returns(transcription)
 
-      mock_lob_integration = Snailmail::LobIntegration.new
-      mock_lob_integration.expects(:mail_postcard).
-          with(
-          recipient.address_to_hash,
-          recipient.user.address_to_hash,
-          "http://#{Snailmail::SITE_HOSTNAME}/random_postcard",
-          transcription).
-          returns(true)
-
-
-      Snailmail::Telephony.class_variable_set(:@@mailer, mock_lob_integration)
-
+      Snailmail::LobIntegration.expects(:mail_postcard).
+        with(
+        recipient.address_to_hash,
+        recipient.user.address_to_hash,
+        "http://#{Snailmail::SITE_HOSTNAME}/random_postcard",
+        transcription).
+        returns(true)
 
       get '/record_for_recipient', {
         :CallSid => call_sid,
