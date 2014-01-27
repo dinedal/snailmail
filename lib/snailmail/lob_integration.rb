@@ -28,7 +28,7 @@ class Snailmail::LobIntegration
   end
 
   def self.verify(address)
-    self.instance.verif(address)
+    self.instance.verify(address)
   end
 
   def mail_postcard(to_address, from_address, front, message)

@@ -33,6 +33,8 @@ class Recipient < Ohm::Model
     assert_present :user
 
     assert_format  :short_code, /[0-9]+/
+
+    assert Snailmail::LobIntegration.verify(address_to_hash), :invalid_address
   end
 
   def assign_address(address_hash)

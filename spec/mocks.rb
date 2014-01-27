@@ -3,7 +3,7 @@ module Snailmail::Mocks
   def user_no_uses
     @user_no_uses ||= User.create({
         :name          => "Paul Bergeron",
-        :address_line1 => "1999 Foo St.",
+        :address_line1 => "600 Ashbury St.",
         :city          => "San Francisco",
         :state         => "CA",
         :zip           => "94103",
@@ -15,7 +15,7 @@ module Snailmail::Mocks
     if @user_no_recipients.nil?
       @user_no_recipients = User.create({
           :name          => "Paul Bergeron",
-          :address_line1 => "1999 Foo St.",
+          :address_line1 => "600 Ashbury St.",
           :city          => "San Francisco",
           :state         => "CA",
           :zip           => "94103",
@@ -30,7 +30,7 @@ module Snailmail::Mocks
     if @user_with_recipient.nil?
       @user_with_recipient = User.create({
           :name          => "Paul Bergeron",
-          :address_line1 => "1999 Foo St.",
+          :address_line1 => "600 Ashbury St.",
           :city          => "San Francisco",
           :state         => "CA",
           :zip           => "94103",
@@ -40,7 +40,7 @@ module Snailmail::Mocks
 
       @recipient ||= Recipient.create({
           :name          => "Hedi",
-          :address_line1 => "1998 Foo St.",
+          :address_line1 => "600 Ashbury St.",
           :city          => "San Francisco",
           :state         => "CA",
           :zip           => "94103",
